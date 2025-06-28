@@ -4,8 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import Icon from "@/components/ui/icon";
 
-const GrenadeSection = () => {
+interface GrenadeSectionProps {
+  pigCoins: number;
+  setPigCoins: (coins: number) => void;
+}
+
+const GrenadeSection = ({ pigCoins, setPigCoins }: GrenadeSectionProps) => {
   const [isOpening, setIsOpening] = useState(false);
+  const GRENADE_COST = 100;
 
   const chances = [
     { range: "1-50₽", chance: 45, color: "cs2-blue" },
@@ -16,6 +22,11 @@ const GrenadeSection = () => {
   ];
 
   const handleOpenGrenade = () => {
+    if (pigCoins < GRENADE_COST) {
+      return; // Недостаточно средств
+    }
+
+    setPigCoins(pigCoins - GRENADE_COST);
     setIsOpening(true);
     setTimeout(() => setIsOpening(false), 2000);
   };
@@ -58,7 +69,7 @@ const GrenadeSection = () => {
                     size="lg"
                     className="w-full bg-cs2-red hover:bg-cs2-red/90 text-white font-oswald text-lg"
                     onClick={handleOpenGrenade}
-                    disabled={isOpening}
+                    disabled={isOpening || pigCoins < GRENADE_COST}
                   >
                     {isOpening ? (
                       <>
@@ -68,6 +79,11 @@ const GrenadeSection = () => {
                           className="mr-2 animate-spin"
                         />
                         Взрыв...
+                      </>
+                    ) : pigCoins < GRENADE_COST ? (
+                      <>
+                        <Icon name="AlertCircle" size={20} className="mr-2" />
+                        Недостаточно средств
                       </>
                     ) : (
                       <>
